@@ -3,9 +3,9 @@
 #define LED1 9
 #define LED2 11
 #define REG_CAS_KONS 500
-#define BORTEP 25
-#define MRATEP 24
-#define DEDTEP 23
+#define BORTEP 23
+#define MRATEP 18
+#define DEDTEP 18
 float temperature1(int pin);
 long timos;
 int cerp;
@@ -48,7 +48,7 @@ void loop() {
     Serial.println(temp1);
     Serial.print("Teplota stara 1: ");
     Serial.println(temp1L);
-        Serial.print("Teplota 2: ");
+    Serial.print("Teplota 2: ");
     Serial.println(temp2);
     Serial.print("Teplota stara 2: ");
     Serial.println(temp2L);
@@ -70,31 +70,26 @@ void loop() {
         {
           pelt -= 10;
           Serial.println("Topime");
-
         }
       }
+      //pokud podchlazuji krev na bod mrazu vypnout peltiera
+      if (temp1 < MRATEP)
+      {
+        pelt = LOW;
+      }
     }
-    if (temp1 < MRATEP)
-    {
-      digitalWrite(LED2, LOW);
-    } else
-    {
-      digitalWrite(LED2, HIGH);
-    }
-    
+
+//pokud na druhem teplomeru je smrtelná teplota vypneme chlazení ihned
     if (abs(temp2 - temp2L) > 0.5)//proti kmitani regulace
     {
       if (temp2 < DEDTEP)
       {
-        digitalWrite(LED1, LOW);
-        digitalWrite(LED2, LOW);
-      } else
-      {
-        digitalWrite(LED2, HIGH);
-      }
+         Serial.println("Zabijim");
+        pelt = LOW;
+      } 
     }
-    
-    Serial.print("Svit: ");
+
+    Serial.print("Vykon peltiera (0-255): ");
     Serial.println(pelt);
     temp1L = temp1;
     temp2L = temp2;
